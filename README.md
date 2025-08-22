@@ -53,7 +53,7 @@ pkill -f LanguageIndicator
 
 ```
 language-indicator/
-├── main.swift          # 메인 소스 코드 (리팩토링됨)
+├── main.swift         # 메인 소스 코드
 ├── build.sh           # 빌드 스크립트
 ├── build/             # 빌드 결과물
 └── README.md          # 문서
