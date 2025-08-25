@@ -96,8 +96,25 @@ class LanguageIndicator {
     
     // MARK: - Event Monitoring Setup
     private func setupEventMonitoring() {
+        setupInputSourceMonitoring()
         setupMouseClickMonitoring()
         debugPrint("🖱️ Mouse click monitoring enabled")
+    }
+    
+    private func setupInputSourceMonitoring() {
+        // Monitor input source changes
+        DistributedNotificationCenter.default.addObserver(
+            self,
+            selector: #selector(inputSourceChanged),
+            name: NSNotification.Name(rawValue: kTISNotifySelectedKeyboardInputSourceChanged as String),
+            object: nil
+        )
+    }
+    
+    @objc private func inputSourceChanged() {
+        DispatchQueue.main.async { [weak self] in
+            self?.updateCurrentInputSource()
+        }
     }
     
     private func setupMouseClickMonitoring() {
