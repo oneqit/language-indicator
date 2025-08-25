@@ -1,13 +1,44 @@
 #!/bin/bash
 
-# Language Indicator 빌드 스크립트
+set -e  # Exit on any error
 
-echo "🔨 Swift 컴파일러로 Language Indicator 빌드 중..."
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-# 빌드 디렉토리 생성
+print() {
+    echo -e "$1"
+}
+
+print_info() {
+    print "${BLUE}$1${NC}"
+}
+
+print_ok() {
+    print "${GREEN}✅ $1${NC}"
+}
+
+print_warning() {
+    print "${YELLOW}⚠️  $1${NC}"
+}
+
+print_error() {
+    print "${RED}❌ $1${NC}"
+}
+
+print_info "🔍 Checking if the required compiler is installed..."
+if ! command -v swiftc &> /dev/null; then
+    print_error "Swift is not installed. Please install Xcode or Swift toolchain."
+    print_info "To install:"
+    print_info "  xcode-select --install"
+    exit 1
+fi
+
+print_info "📂 Creating build directory..."
 mkdir -p build
 
-# CPU 아키텍처 자동 감지
 ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ]; then
     TARGET="arm64-apple-macos14.0"
@@ -15,9 +46,9 @@ else
     TARGET="x86_64-apple-macos14.0"
 fi
 
-echo "🔧 타겟 아키텍처: $TARGET"
+print_info "🔧 Target architecture: $TARGET"
 
-# swiftc로 컴파일
+print_info "🔨 Building..."
 swiftc main.swift \
     -framework Cocoa \
     -framework Carbon \
@@ -25,15 +56,9 @@ swiftc main.swift \
     -target $TARGET
 
 if [ $? -eq 0 ]; then
-    echo "✅ 빌드 성공!"
-    echo "📍 실행 파일 위치: ./build/LanguageIndicator"
-    echo ""
-    echo "실행하려면:"
-    echo "  ./build/LanguageIndicator"
-    echo ""
-    echo "또는 백그라운드 실행:"
-    echo "  nohup ./build/LanguageIndicator > /dev/null 2>&1 &"
+    print_ok "Build succeeded!"
+    print_info "📍 Executable location: ./build/LanguageIndicator"
 else
-    echo "❌ 빌드 실패!"
+    print_error "Build failed!"
     exit 1
 fi
